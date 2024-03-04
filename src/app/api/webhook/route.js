@@ -5,21 +5,21 @@ import { createBooking, updateHotelRoom } from '@/libs/apis';
 
 const checkout_session_completed = 'checkout.session.completed';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY , {
   apiVersion: '2023-10-16',
 });
 
-export async function POST(req: Request, res: Response) {
+export async function POST(req, res) {
   const reqBody = await req.text();
   const sig = req.headers.get('stripe-signature');
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-  let event: Stripe.Event;
+  let event;       
 
   try {
     if (!sig || !webhookSecret) return;
     event = stripe.webhooks.constructEvent(reqBody, sig, webhookSecret);
-  } catch (error: any) {
+  } catch (error) {
     return new NextResponse(`Webhook Error: ${error.message}`, { status: 500 });
   }
 
